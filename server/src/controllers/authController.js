@@ -25,17 +25,21 @@ exports.sendOtp = async (req, res) => {
         const otp = generateOtp();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
+        console.log(`Generated OTP for ${email}: ${otp}`);
+
         await Otp.findOneAndUpdate(
             { email },
             { otp, expiresAt, name },
             { upsert: true, new: true }
         );
 
+        console.log(`Saved OTP to database for ${email}`);
+
         await sendOtpMail(email, otp);
         res.status(200).json({ msg: 'OTP sent successfully' });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server error while sending OTP' });
+        console.error('Error in sendOtp controller:', err);
+        res.status(500).json({ msg: 'Server error while sending OTP', error: err.message });
     }
 };
 
