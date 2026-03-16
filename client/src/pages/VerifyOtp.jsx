@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
-import { Mail, ArrowRight, Loader2, ShieldCheck, ArrowLeft, Fingerprint, AlertCircle } from 'lucide-react';
+import { Mail, ArrowRight, Loader2, ShieldCheck, ArrowLeft, Fingerprint, AlertCircle, Lock } from 'lucide-react';
 
 const VerifyOtp = () => {
     const [otp, setOtp] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [timer, setTimer] = useState(0);
@@ -18,6 +19,7 @@ const VerifyOtp = () => {
     const email = location.state?.email;
     const name = location.state?.name;
     const isRegistration = location.state?.isRegistration;
+    const isForgotPassword = location.state?.isForgotPassword;
 
     useEffect(() => {
         let interval;
@@ -51,8 +53,15 @@ const VerifyOtp = () => {
         e.preventDefault();
         setIsLoading(true);
         setMessage('');
+
+        if (isForgotPassword && !newPassword) {
+            setMessage('Please set a new password.');
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            const res = await API.post('/api/auth/verify-otp', { email, otp });
+            const res = await API.post('/api/auth/verify-otp', { email, otp, newPassword });
             login(res.data.token, res.data.user);
             navigate('/dashboard');
         } catch (err) {
@@ -116,6 +125,22 @@ const VerifyOtp = () => {
                                 className="block w-full px-4 py-6 text-center text-4xl font-black tracking-[0.3em] bg-white/50 border border-slate-200 rounded-[2rem] text-slate-900 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all duration-300 placeholder:text-slate-200 placeholder:tracking-normal"
                             />
                         </div>
+
+                        {isForgotPassword && (
+                            <div className="relative group mt-4">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
+                                    placeholder="Set New Password"
+                                />
+                            </div>
+                        )}
 
                         {message && (
                             <div className={`flex items-center space-x-3 p-4 rounded-2xl text-sm border animate-in fade-in slide-in-from-top-2 ${message.includes('dispatched') ? 'bg-green-50 border-green-100 text-green-700' : 'bg-red-50 border-red-100 text-red-600'}`}>

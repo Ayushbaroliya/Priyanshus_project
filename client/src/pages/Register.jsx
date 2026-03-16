@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { UserPlus, Mail, ShieldCheck, Loader2, ArrowRight, User } from 'lucide-react';
+import { UserPlus, Mail, ShieldCheck, Loader2, ArrowRight, User, Phone, Lock } from 'lucide-react';
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -21,8 +23,8 @@ const Register = () => {
         setIsLoading(true);
         setError('');
         try {
-            await API.post('/api/auth/send-otp', { email, name, isRegistration: true });
-            navigate('/verify-otp', { state: { email, name, isRegistration: true } });
+            await API.post('/api/auth/send-otp', { email, name, mobile, password, isRegistration: true });
+            navigate('/verify-otp', { state: { email, name, mobile, password, isRegistration: true } });
         } catch (err) {
             setError(err.response?.data?.msg || 'Failed to send OTP. Please try again.');
         } finally {
@@ -76,6 +78,34 @@ const Register = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
                                 placeholder="Email Address"
+                            />
+                        </div>
+
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Phone className="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                            </div>
+                            <input
+                                type="tel"
+                                required
+                                value={mobile}
+                                onChange={(e) => setMobile(e.target.value)}
+                                className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
+                                placeholder="Mobile Number"
+                            />
+                        </div>
+
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                            </div>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
+                                placeholder="Password"
                             />
                         </div>
                     </div>

@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import VerifyOtp from './pages/VerifyOtp';
 import Dashboard from './pages/Dashboard';
 import AdminUpload from './pages/AdminUpload';
+import AdminUsers from './pages/AdminUsers';
 import ViewPDF from './pages/ViewPDF';
 import Navbar from './components/Navbar';
 import UIDemo from './pages/UIDemo';
@@ -32,6 +33,12 @@ function App() {
                         <Route path="/admin-upload" element={
                             <ProtectedRoute adminOnly={true}>
                                 <AdminUpload />
+                            </ProtectedRoute>
+                        } />
+
+                        <Route path="/admin-users" element={
+                            <ProtectedRoute adminOnly={true}>
+                                <AdminUsers />
                             </ProtectedRoute>
                         } />
 

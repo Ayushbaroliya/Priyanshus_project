@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Menu, X, LogOut, LayoutDashboard, Upload, FileText, ShieldCheck } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard, Upload, Users, ShieldCheck } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -46,10 +46,16 @@ const Navbar = () => {
                             <span>Terminal</span>
                         </Link>
                         {user.role === 'admin' && (
-                            <Link to="/admin-upload" className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-primary-600 hover:bg-primary-50 transition-all">
-                                <Upload className="h-4 w-4" />
-                                <span>Publish</span>
-                            </Link>
+                            <>
+                                <Link to="/admin-upload" className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-primary-600 hover:bg-primary-50 transition-all">
+                                    <Upload className="h-4 w-4" />
+                                    <span>Publish</span>
+                                </Link>
+                                <Link to="/admin-users" className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-primary-600 hover:bg-primary-50 transition-all">
+                                    <Users className="h-4 w-4" />
+                                    <span>Users</span>
+                                </Link>
+                            </>
                         )}
                         <div className="h-4 w-px bg-slate-200 mx-4" />
 
@@ -96,14 +102,24 @@ const Navbar = () => {
                             <span>Secure Terminal</span>
                         </Link>
                         {user.role === 'admin' && (
-                            <Link
-                                to="/admin-upload"
-                                className="flex items-center space-x-3 p-4 rounded-2xl text-slate-600 font-bold hover:bg-primary-50 hover:text-primary-600 transition-all"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                <Upload className="h-5 w-5" />
-                                <span>Publish Document</span>
-                            </Link>
+                            <>
+                                <Link
+                                    to="/admin-upload"
+                                    className="flex items-center space-x-3 p-4 rounded-2xl text-slate-600 font-bold hover:bg-primary-50 hover:text-primary-600 transition-all"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <Upload className="h-5 w-5" />
+                                    <span>Publish Document</span>
+                                </Link>
+                                <Link
+                                    to="/admin-users"
+                                    className="flex items-center space-x-3 p-4 rounded-2xl text-slate-600 font-bold hover:bg-primary-50 hover:text-primary-600 transition-all"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <Users className="h-5 w-5" />
+                                    <span>Manage Users</span>
+                                </Link>
+                            </>
                         )}
                         <div className="h-px bg-slate-100 mx-2" />
                         <div className="p-4 flex items-center justify-between">

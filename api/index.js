@@ -1,7 +1,2 @@
-const app = require('../server/src/app');
-const connectDB = require('../server/src/config/db');
-
-// Connect to Database
-connectDB();
-
+const app = require("../server/server");
 module.exports = app;

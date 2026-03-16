@@ -10,5 +10,7 @@ const upload = multer({ storage });
 
 router.post('/upload', auth, admin, upload.single('pdf'), adminController.uploadPdf);
 router.delete('/pdf/:id', auth, admin, adminController.deletePdf);
+router.get('/users', auth, admin, adminController.getUsers);
+router.delete('/users/:id', auth, admin, adminController.deleteUser);
 
 module.exports = router;

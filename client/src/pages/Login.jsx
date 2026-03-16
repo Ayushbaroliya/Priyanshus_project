@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Mail, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { Mail, ArrowRight, Loader2, ShieldCheck, Lock } from 'lucide-react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isForgotLoading, setIsForgotLoading] = useState(false);
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, login } = useAuth();
 
     React.useEffect(() => {
         if (user) navigate('/dashboard');
@@ -18,14 +20,32 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setError(''); // Changed setMessage to setError
+        setError('');
         try {
-            await API.post('/api/auth/send-otp', { email, isRegistration: false });
-            navigate('/verify-otp', { state: { email, isRegistration: false } });
+            const res = await API.post('/api/auth/login', { email, password });
+            login(res.data.token, res.data.user);
+            navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.msg || 'Failed to send OTP. Please try again.'); // Changed setMessage to setError
+            setError(err.response?.data?.msg || 'Failed to login. Please try again.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            setError('Please enter your email first to reset your password.');
+            return;
+        }
+        setIsForgotLoading(true);
+        setError('');
+        try {
+            await API.post('/api/auth/send-otp', { email, isRegistration: false });
+            navigate('/verify-otp', { state: { email, isRegistration: false, isForgotPassword: true } });
+        } catch (err) {
+            setError(err.response?.data?.msg || 'Failed to send reset OTP.');
+        } finally {
+             setIsForgotLoading(false);
         }
     };
 
@@ -50,18 +70,45 @@ const Login = () => {
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                    <div className="space-y-4">
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                            </div>
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
+                                placeholder="Email Address"
+                            />
                         </div>
-                        <input
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
-                            placeholder="Email Address"
-                        />
+
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
+                            </div>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full pl-11 pr-4 py-4 bg-white/50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-8 focus:ring-primary-500/5 focus:border-primary-500 transition-all font-medium"
+                                placeholder="Password"
+                            />
+                        </div>
+                        
+                        <div className="flex justify-end">
+                            <button
+                                type="button"
+                                onClick={handleForgotPassword}
+                                disabled={isForgotLoading}
+                                className="text-primary-600 font-bold hover:text-primary-700 transition-colors text-sm"
+                            >
+                                {isForgotLoading ? 'Sending OTP...' : 'Forgot Password?'}
+                            </button>
+                        </div>
                     </div>
 
                     {error && ( // Changed message to error
@@ -80,7 +127,7 @@ const Login = () => {
                             <Loader2 className="h-5 w-5 animate-spin" />
                         ) : (
                             <>
-                                <span>Get Access Token</span>
+                                <span>Login</span>
                                 <ArrowRight className="h-4 w-4" />
                             </>
                         )}

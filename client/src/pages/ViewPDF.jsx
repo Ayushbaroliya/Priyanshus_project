@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAuth } from '../context/AuthContext';
 import { ArrowLeft, Loader2, ZoomIn, ZoomOut, AlertTriangle, ShieldCheck, Download, Printer, Lock, ChevronLeft, ChevronRight, ShieldAlert } from 'lucide-react';
+import Watermark from '../components/Watermark';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -136,6 +137,7 @@ const ViewPDF = () => {
 
             {/* Viewer Area */}
             <div className="flex-grow overflow-auto p-4 md:p-12 flex flex-col items-center bg-[#020617] relative scrollbar-hide">
+                <Watermark />
                 {/* Fixed Watermark Component */}
                 <div className="fixed inset-0 pointer-events-none z-[60] flex items-center justify-center overflow-hidden opacity-[0.03] select-none flex-col space-y-24">
                     {Array.from({ length: 12 }).map((_, i) => (
@@ -205,7 +207,7 @@ const ViewPDF = () => {
                                         />
                                         {/* Per-page subtle watermark overlay */}
                                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03] select-none uppercase font-black text-4xl rotate-45 text-slate-950">
-                                            {user.email}
+                                            {user.mobile} | {user.email}
                                         </div>
                                     </div>
                                 ))}
